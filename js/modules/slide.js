@@ -1,3 +1,6 @@
+// Importando a função de debounce
+import debounce from './debounce.js';
+
 export default class Slide {
   constructor(slide, wrapper) {
     // Selecionando os elementos slide
@@ -7,16 +10,12 @@ export default class Slide {
     // Objeto com a posição do mouse do do touch inicial,
     // final e o movimento total percorrido
     this.distancia = { finalPosition: 0, startX: 0, movement: 0 }
+    // Classe CSS ativo
+    this.activeClass = 'ativo';
   }
 
-  // Método que faz o this de todos os métodos de callback
-  // fazerem ferência a classe
-  bindEvents() {
-    this.onStart = this.onStart.bind(this);
-    this.onMove = this.onMove.bind(this);
-    this.onEnd = this.onEnd.bind(this);
-  }
-
+  // Adicionando transição ao elemento slide e aos
+  // elementos dentro dele
   transition(active) {
     this.slide.style.transition = active ? 'transform .3s' : '';
   }
@@ -142,6 +141,17 @@ export default class Slide {
     this.slidesIndexNav(index);
 
     this.distancia.finalPosition = activeSlide.position;
+    this.changeClassActiveSlide();
+  }
+
+  // Aplicando a classe CSS de ativo no slide ativo
+  changeClassActiveSlide() {
+    // Removendo a classe ativo de todos os slides antes de colocar
+    this.slideArray.forEach((i) => {
+      i.element.classList.remove(this.activeClass);
+    });
+
+    this.slideArray[this.index.active].element.classList.add(this.activeClass);
   }
 
   // Métodos para navegar pelos slides
@@ -156,12 +166,35 @@ export default class Slide {
     if (this.index.next !== undefined) this.changeSlide(this.index.next);
   }
 
+  // Método que atualiza as configurações de posição
+  // de cada slide quando a página sofrer um resize
+  onResize() {
+    setTimeout(() => {
+      this.slidesConfig();
+      this.changeSlide(this.index.active);
+    }, 1000);
+  }
+
+  addResizeEvent() {
+    window.addEventListener('resize', this.onResize);
+  }
+  
+  // Método que faz o this de todos os métodos de callback
+  // fazerem ferência a classe
+  bindEvents() {
+    this.onStart = this.onStart.bind(this);
+    this.onMove = this.onMove.bind(this);
+    this.onEnd = this.onEnd.bind(this);
+    this.onResize = debounce(this.onResize.bind(this), 200);
+  }
+
   // Método que inicia a classe
   init() {
     this.bindEvents();
     this.transition(true);
     this.addSlideEvent();
     this.slidesConfig();
+    this.addResizeEvent();
     return this;
   }
 }

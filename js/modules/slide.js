@@ -17,6 +17,10 @@ export default class Slide {
     this.onEnd = this.onEnd.bind(this);
   }
 
+  transition(active) {
+    this.slide.style.transition = active ? 'transform .3s' : '';
+  }
+
   // Método que move os itens dos slides usando a propriedade 
   // CSS transform: translate3d baseado no movimento percorrido
   moveSlide(distanciaX) {
@@ -57,6 +61,7 @@ export default class Slide {
     }
 
     this.wrapper.addEventListener(movetype, this.onMove);
+    this.transition(false);
   }
 
   // Método que ocorre quando o clique acabar, removendo os
@@ -68,6 +73,21 @@ export default class Slide {
 
     this.wrapper.removeEventListener(movetype, this.onMove);
     this.distancia.finalPosition = this.distancia.movePosition;
+
+    this.transition(true);
+    this.changeSlideOnEnd();
+  }
+
+  // Evento que centraliza o slide anterior ou próximo quando o
+  // usuário largar o clique (mouse ou touch)
+  changeSlideOnEnd() {
+    if ((this.distancia.movement > 120) && (this.index.next !== undefined)) {
+      this.goToNextSlide();
+    } else if ((this.distancia.movement < -120) && (this.index.prev !== undefined)) {
+      this.goToPrevSlide();
+    } else {
+      this.changeSlide(this.index.active);
+    }
   }
 
   // Método que adiciona os eventListeners ao wrapper do slide
@@ -83,12 +103,16 @@ export default class Slide {
 
   // Slides config
 
+  // Método que retorna a posição de cada slide
+  // centralizado na tela
   slidePositionCenter(slide) {
     const margin = (this.wrapper.offsetWidth - slide.offsetWidth) / 2;
 
     return -(slide.offsetLeft - margin);
   }
 
+  // Método que retorna uma array de objetos com a posição
+  // de cada slide centralizado na tela e ele mesmo (element)
   slidesConfig() {
     this.slideArray = [...this.slide.children].map((element) => {
       const position = this.slidePositionCenter(element);
@@ -98,7 +122,7 @@ export default class Slide {
   }
 
   // Método que pega os index de todos os itens da array do slide
-  // Pega o item ativo, anterior e o próximo
+  // Pega o slide ativo, anterior e o próximo
   slidesIndexNav(index) {
     const last = this.slideArray.length - 1;
 
@@ -109,6 +133,8 @@ export default class Slide {
     };
   }
 
+  // Método que baseado no index do slide, move para ele
+  // o deixando centralizado na tela e salva sua posição final
   changeSlide(index) {
     const activeSlide = this.slideArray[index];
 
@@ -118,10 +144,24 @@ export default class Slide {
     this.distancia.finalPosition = activeSlide.position;
   }
 
+  // Métodos para navegar pelos slides
+
+  // Método para ir pro slide anterior
+  goToPrevSlide() {
+    if (this.index.prev !== undefined) this.changeSlide(this.index.prev);
+  }
+
+  // Método para ir pro próximo slide
+  goToNextSlide() {
+    if (this.index.next !== undefined) this.changeSlide(this.index.next);
+  }
+
   // Método que inicia a classe
   init() {
     this.bindEvents();
+    this.transition(true);
     this.addSlideEvent();
+    this.slidesConfig();
     return this;
   }
 }

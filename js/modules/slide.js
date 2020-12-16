@@ -1,7 +1,7 @@
 // Importando a função de debounce
 import debounce from './debounce.js';
 
-export default class Slide {
+export class Slide {
   constructor(slide, wrapper) {
     // Selecionando os elementos slide
     this.slide = document.querySelector(slide);
@@ -186,6 +186,8 @@ export default class Slide {
     this.onMove = this.onMove.bind(this);
     this.onEnd = this.onEnd.bind(this);
     this.onResize = debounce(this.onResize.bind(this), 200);
+    this.goToPrevSlide = this.goToPrevSlide.bind(this);
+    this.goToNextSlide = this.goToNextSlide.bind(this);
   }
 
   // Método que inicia a classe
@@ -195,6 +197,27 @@ export default class Slide {
     this.addSlideEvent();
     this.slidesConfig();
     this.addResizeEvent();
+    this.changeSlide(0);
     return this;
+  }
+}
+
+// Criando a subclasse SlideNav para fazer a funcionalidade
+// de navegação a partir dos botões de anterior e próximo
+export class SlideNav extends Slide {
+  // Método que seleciona os elementos do DOM para
+  // navegar para frente e para trás no slide
+  addArrow(prev, next) {
+    this.prevElement = document.querySelector(prev);
+    this.nextElement = document.querySelector(next);
+
+    this.addArrowEvent();
+  }
+
+  // Método para adicionar os eventListeners de 
+  // click nos botões de navegação 
+  addArrowEvent() {
+    this.prevElement.addEventListener('click', this.goToPrevSlide);
+    this.nextElement.addEventListener('click', this.goToNextSlide);
   }
 }

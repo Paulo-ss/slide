@@ -14,7 +14,9 @@ img {
 }
 
 .slide-wrapper {
+  position: relative;
   overflow: hidden;
+  margin-top: 1rem;
 }
 
 .slide {
@@ -41,4 +43,35 @@ img {
 .slide li.ativo {
   opacity: 1;
   transform: scale(1);
+}
+
+.arrow-nav {
+  display: flex;
+  margin: 0 auto;
+}
+
+.arrow-nav button:nth-child(1) {
+  transform: rotate(-180deg);
+  box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.arrow-nav button {
+  margin: 2rem auto;
+  padding: 1rem;
+  background-color: rgb(232, 155, 53);
+  cursor: pointer;
+  border: none;
+  border-radius: 50%;
+  outline: none;
+  color: #fff;
+  font-weight: bold;
+  font-size: 1.3rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  transition: all 0.3s;
+}
+
+.arrow-nav button.desativado {
+  box-shadow: none;
+  opacity: 0.6;
+  cursor: not-allowed;
 }

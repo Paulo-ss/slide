@@ -81,6 +81,43 @@ export default class Slide {
     this.wrapper.addEventListener('touchend', this.onEnd);
   }
 
+  // Slides config
+
+  slidePositionCenter(slide) {
+    const margin = (this.wrapper.offsetWidth - slide.offsetWidth) / 2;
+
+    return -(slide.offsetLeft - margin);
+  }
+
+  slidesConfig() {
+    this.slideArray = [...this.slide.children].map((element) => {
+      const position = this.slidePositionCenter(element);
+
+      return { position, element };
+    });
+  }
+
+  // Método que pega os index de todos os itens da array do slide
+  // Pega o item ativo, anterior e o próximo
+  slidesIndexNav(index) {
+    const last = this.slideArray.length - 1;
+
+    this.index = {
+      prev: index ? index - 1 : undefined,
+      active: index,
+      next: index === last ? undefined : index + 1,
+    };
+  }
+
+  changeSlide(index) {
+    const activeSlide = this.slideArray[index];
+
+    this.moveSlide(activeSlide.position);
+    this.slidesIndexNav(index);
+
+    this.distancia.finalPosition = activeSlide.position;
+  }
+
   // Método que inicia a classe
   init() {
     this.bindEvents();

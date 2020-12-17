@@ -232,8 +232,9 @@ export class SlideNav extends Slide {
     this.nextElement.addEventListener('click', this.goToNextSlide);
   }
 
-  // Método que cria os controles de navegação
-  // Uma ul com uma li para cada slide dentro
+  // Método que cria os controles de navegação -
+  // Uma ul com uma li para cada slide dentro caso um
+  // controle padrão não seja criado pelo programador
   createControl() {
     const control = document.createElement('ul');
     control.dataset.control = 'slide';
